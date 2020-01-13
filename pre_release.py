@@ -16,11 +16,31 @@ from datetime import datetime
 
 def main(version):
 
+    generate_comparison_link()
+
     specs(version)
 
     clientconfig(version)
 
     gradleprops(version)
+
+def generate_comparison_link():
+    """
+    Generate a comparison link like https://github.com/battlecode/battlecode20/compare/commit...commit
+    comparing the most recent commit with the latest released version.
+    """
+    # get latest tag
+    latest_tag = subprocess.check_output("git tag --sort=committerdate | tail -1", shell=True).decode("utf-8").strip('\n')
+    # get commit
+    commit = subprocess.check_output("git rev-list -n 1 " + latest_tag, shell=True).decode('utf-8').strip('\n')
+
+    # get latest commit
+    latest = subprocess.check_output("git rev-parse HEAD", shell=True).decode('utf-8').strip('\n')
+
+    # print the link
+    link = "https://github.com/battlecode/battlecode20/compare/" + commit + "..." + latest
+    print("Go to the following link and check out the differences:")
+    print(link)
 
 def specs(version):
     with open('specs/specs.md', 'r') as f:
