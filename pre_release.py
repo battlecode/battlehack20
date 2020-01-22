@@ -42,6 +42,13 @@ def update_tournament(tour):
         cs = f.read()
     
     cs = cs.replace('private readonly types: MapType[] = [','private readonly types: MapType[] = [MapType.' + tour + ', ')
+    ll = []
+    for l in cs.split('\n'):
+        if l.strip().startswith('private readonly types: MapType[] '):
+            ll.append(l[:-2] + ", MapType." + tour + "];")
+        else:
+            ll.append(l)
+    cs = '\n'.join(ll)
 
     with open('client/visualizer/src/game/sidebar/mapfilter.ts', 'w') as f:
         f.write(cs)
