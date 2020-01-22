@@ -17,7 +17,7 @@ from datetime import datetime
 INTERNAL_SCAFFOLD_PATH = '../battlecode20-internal-scaffold'
 ENGINE_WORLD_PATH = 'engine/src/main/battlecode/world'
 
-def main(version, maps):
+def main(version, maps, tournament):
 
     generate_comparison_link()
 
@@ -28,9 +28,26 @@ def main(version, maps):
     gradleprops(version)
 
     if maps:
-        build_maps()
+        if tournament is not None:
+            build_maps(tour=tournament)
+        else:
+            build_maps()
+    
+    if tournament is not None:
+        update_tournament(tournament)
 
-def build_maps(tour='CUSTOM'):
+def update_tournament(tour):
+
+    with open('client/visualizer/src/game/sidebar/mapfilter.ts', 'r') as f:
+        cs = f.read()
+    
+    cs.replace('private readonly types: MapType[] = [','private readonly types: MapType[] = [MapType.' + tour + ', ')
+
+    with open('client/visualizer/src/game/sidebar/mapfilter.ts', 'w') as f:
+        f.write(cs)
+
+
+def build_maps(tour='DEFAULT'):
     # copy from clipboard
     # assumes a list separated by \n, as if written in a google sheets column
     from pandas.io.clipboard import clipboard_get
@@ -66,7 +83,7 @@ def build_maps(tour='CUSTOM'):
     
     cs.replace('export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([', 'export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([\n' + '\n'.join(['  ["' + m  + '", MapType.' + tour + '],' for m in maplist]))
 
-    with open('client/visualizer/src/constants.ts', 'r') as f:
+    with open('client/visualizer/src/constants.ts', 'w') as f:
         f.write(cs)
     
     # now update backend/settings.py
@@ -75,7 +92,7 @@ def build_maps(tour='CUSTOM'):
     
     cs.replace('SERVER_MAPS = [', 'SERVER_MAPS = [\n' + '\n'.join(['  "' + m + '",' for m in maplist]))
 
-    with open('backend/settings.py', 'r') as f:
+    with open('backend/settings.py', 'w') as f:
         f.write(cs)
 
 
@@ -163,7 +180,9 @@ if __name__ == '__main__':
     parser.add_argument('version', help='Version number, e.g. 2020.0.1.1')
     parser.add_argument('--maps', default=False,
                     help='whether maps should be built and copied')
+    parser.add_argument('--tournament', default=None,
+                    help='tournament name: one of DEFAULT,SPRINT,SEEDING,INTL_QUALIFYING,US_QUALIFYING,HS,NEWBIE,FINAL,CUSTOM')
 
     args = parser.parse_args()
 
-    main(args.version, args.maps)
+    main(args.version, args.maps, args.tournament)
