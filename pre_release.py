@@ -14,7 +14,10 @@ import subprocess
 import os
 from datetime import datetime
 
-def main(version):
+INTERNAL_SCAFFOLD_PATH = '../battlecode20-internal-scaffold'
+ENGINE_WORLD_PATH = 'engine/src/main/battlecode/world'
+
+def main(version, maps):
 
     generate_comparison_link()
 
@@ -23,6 +26,59 @@ def main(version):
     clientconfig(version)
 
     gradleprops(version)
+
+    if maps:
+        build_maps()
+
+def build_maps(tour='CUSTOM'):
+    # copy from clipboard
+    # assumes a list separated by \n, as if written in a google sheets column
+    from pandas.io.clipboard import clipboard_get
+    maplist = [x.strip() for x in clipboard_get().split('\n')]
+
+    # copy the maps over from battlecode20-internal-scaffold
+    for m in maplist:
+        with open(INTERNAL_SCAFFOLD_PATH + '/src/maps/' + m + '.java', 'r') as f:
+            mp = f.read()
+        # change the package name
+        mp = mp.replace('package maps', 'package battlecode.world.maps')
+        # change the path
+        mp = mp.replace('public static final String outputDirectory = "maps/";', 'public static final String outputDirectory = "engine/src/main/battlecode/world/resources/";')
+        # write to maps
+        with open('engine/src/main/battlecode/world/maps/' + m + '.java', 'w') as f:
+            f.write(mp)
+
+    # add the maps to BuildMaps.java
+    with open(ENGINE_WORLD_PATH + "/BuildMaps.java", "r") as f:
+        bmps = f.read()
+    
+    bmps = bmps.replace('public static void main(String[] args) {', 'public static void main(String[] args) {\n' + '\n'.join(['        ' + m + '.main(args);' for m in maplist]))
+
+    with open(ENGINE_WORLD_PATH + "/BuildMaps.java", "w") as f:
+        f.write(bmps)
+
+    # build the maps
+    os.system('./gradlew buildMaps')
+
+    # now update SERVER_MAPS in client/visualizer/constants.ts
+    with open('client/visualizer/src/constants.ts', 'r') as f:
+        cs = f.read()
+    
+    cs.replace('export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([', 'export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([\n' + '\n'.join(['  ["' + m  + '", MapType.' + tour + '],' for m in maplist]))
+
+    with open('client/visualizer/src/constants.ts', 'r') as f:
+        f.write(cs)
+    
+    # now update backend/settings.py
+    with open('backend/settings.py', 'r') as f:
+        cs = f.read()
+    
+    cs.replace('SERVER_MAPS = [', 'SERVER_MAPS = [\n' + '\n'.join(['  "' + m + '",' for m in maplist]))
+
+    with open('backend/settings.py', 'r') as f:
+        f.write(cs)
+
+
 
 def generate_comparison_link():
     """
@@ -105,7 +161,9 @@ if __name__ == '__main__':
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument('version', help='Version number, e.g. 2020.0.1.1')
+    parser.add_argument('--maps', default=False,
+                    help='whether maps should be built and copied')
 
     args = parser.parse_args()
 
-    main(args.version)
+    main(args.version, args.maps)
