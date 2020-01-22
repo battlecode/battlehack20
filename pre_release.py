@@ -41,7 +41,7 @@ def update_tournament(tour):
     with open('client/visualizer/src/game/sidebar/mapfilter.ts', 'r') as f:
         cs = f.read()
     
-    cs.replace('private readonly types: MapType[] = [','private readonly types: MapType[] = [MapType.' + tour + ', ')
+    cs = cs.replace('private readonly types: MapType[] = [','private readonly types: MapType[] = [MapType.' + tour + ', ')
 
     with open('client/visualizer/src/game/sidebar/mapfilter.ts', 'w') as f:
         f.write(cs)
@@ -81,7 +81,7 @@ def build_maps(tour='DEFAULT'):
     with open('client/visualizer/src/constants.ts', 'r') as f:
         cs = f.read()
     
-    cs.replace('export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([', 'export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([\n' + '\n'.join(['  ["' + m  + '", MapType.' + tour + '],' for m in maplist]))
+    cs = cs.replace('export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([', 'export const SERVER_MAPS: Map<string, MapType> = new Map<string, MapType>([\n' + '\n'.join(['  ["' + m  + '", MapType.' + tour + '],' for m in maplist]))
 
     with open('client/visualizer/src/constants.ts', 'w') as f:
         f.write(cs)
@@ -90,7 +90,7 @@ def build_maps(tour='DEFAULT'):
     with open('backend/settings.py', 'r') as f:
         cs = f.read()
     
-    cs.replace('SERVER_MAPS = [', 'SERVER_MAPS = [\n' + '\n'.join(['  "' + m + '",' for m in maplist]))
+    cs = cs.replace('SERVER_MAPS = [', 'SERVER_MAPS = [\n' + '\n'.join(['  "' + m + '",' for m in maplist]))
 
     with open('backend/settings.py', 'w') as f:
         f.write(cs)
