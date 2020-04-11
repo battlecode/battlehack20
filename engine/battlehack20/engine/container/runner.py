@@ -81,6 +81,9 @@ class RobotRunner:
 
         self.globals['__builtins__']['log'] = log_method
         self.globals['__builtins__']['enumerate'] = enumerate
+        self.globals['__builtins__']['list'] = list
+        self.globals['__builtins__']['dict'] = dict
+        self.globals['__builtins__']['sum'] = sum
 
         # instrumented methods
         self.globals['__builtins__']['sorted'] = self.instrument.instrumented_sorted
