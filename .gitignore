@@ -6,6 +6,8 @@ node_modules
 venv/
 docker-compose.prod.yml
 
+engine/dist/*
+
 .idea
 
 access.txt
