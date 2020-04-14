@@ -26,20 +26,14 @@ class BasicViewer:
     def view(self, index=-1):
         print(self.view_board(self.board_states[index]))
 
-    def view_board(self, board, colors=True):
+    def view_board(self, board):
         new_board = ''
         for i in range(self.board_size):
             for j in range(self.board_size):
                 if board[i][j]:
                     new_board += '['
-                    if colors:
-                        if board[i][j].team == Team.WHITE:
-                            new_board += '\033[1m\u001b[37m'
-                        else:
-                            new_board += '\033[1m\u001b[36m'
                     new_board += str(board[i][j])
-                    if colors:
-                        new_board += '\033[0m\u001b[0m] '
+                    new_board += '] '
                 else:
                     new_board += '[    ] '
             new_board += '\n'
