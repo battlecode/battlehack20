@@ -101,8 +101,8 @@ class YesTeam extends Component {
                         </div>
                         <div className="content">
                             {/* <ResumeStatus team={this.state.team} /> */}
-                            <p>We need to know a little about your team in order to determine which tournaments you are is eligible for.
-                                Check all boxes that apply to your team. We will verify student status for all teams that qualify for the finals.
+                            <p>We need to know a little about your team in order to determine which prizes your team is eligible for.
+                                Check all boxes that apply to your team. 
                             </p>
                             <EligibiltyOptions change={this.changeHandler} team={this.state.team} update={this.updateTeam} up_but={this.state.up} />
                         </div>
@@ -128,9 +128,9 @@ class YesTeam extends Component {
                                 </div>
                             </div>
                             <div className="row">
-                                {/* <div className="col-md-6">
-                                    <label id="auto_accept_unranked" className="center-row"><input type="checkbox" checked={ this.state.team.auto_accept_unranked } onChange={this.changeHandler} className="form-control center-row-start" /> Auto-accept scrimmages.</label>
-                                </div> */}
+                                <div className="col-md-6">
+                                    <label id="auto_accept_ranked" className="center-row"><input type="checkbox" checked={ this.state.team.auto_accept_ranked } onChange={this.changeHandler} className="form-control center-row-start" /> Auto-accept scrimmages.</label>
+                                </div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
