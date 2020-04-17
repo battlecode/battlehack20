@@ -4,7 +4,7 @@ import faulthandler
 import sys
 import threading
 
-from battlehack20 import CodeContainer, Game, BasicViewer, GameConstants
+from battlehack20 import CodeContainer, Game, BasicViewer, FancyViewer, GameConstants
 
 """
 This is a simple script for running bots and debugging them.
@@ -80,7 +80,8 @@ if __name__ == '__main__':
     # This is just for parsing the input to the script. Not important.
     parser = argparse.ArgumentParser()
     parser.add_argument('player', nargs='+', help="Path to a folder containing a bot.py file.")
-    parser.add_argument('--raw-text', action='store_true', help="Makes playback text-only by disabling colors and cursor movements.")
+    parser.add_argument('--basic-viewer', action='store_true', help="Prints out viewer in the terminal.")
+    parser.add_argument('--raw-text', action='store_true', help="Makes playback text-only in terminal by disabling colors and cursor movements.")
     parser.add_argument('--delay', default=0.8, help="Playback delay in seconds.")
     parser.add_argument('--debug', default='true', choices=('true','false'), help="In debug mode (defaults to true), bot logs and additional information are displayed.")
     parser.add_argument('--max-rounds', default=GameConstants.MAX_ROUNDS, type=int, help="Override the max number of rounds for faster games.")
@@ -103,7 +104,10 @@ if __name__ == '__main__':
                 seed=args.seed, debug=args.debug, colored_logs=not args.raw_text)
     
     # ... and the viewer.
-    viewer = BasicViewer(args.board_size, game.board_states, colors=not args.raw_text)
+    if args.basic_viewer == True:
+        viewer = BasicViewer(args.board_size, game.board_states, colors=not args.raw_text)
+    else:
+        viewer = FancyViewer(args.board_size, game.board_states)
 
 
     # Here we check if the script is run using the -i flag.
