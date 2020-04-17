@@ -1,2 +1,2 @@
-from .game import Game, BasicViewer, GameConstants
+from .game import Game, BasicViewer, FancyViewer, GameConstants
 from .container import CodeContainer
