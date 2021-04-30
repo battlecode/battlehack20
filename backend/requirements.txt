@@ -36,6 +36,6 @@ pyasn1-modules==0.2.7
 pytz==2019.3
 requests==2.22.0
 rsa==4.0
-urllib3==1.25.6
+urllib3==1.25.8
 trueskill==0.4.5    
 sendgrid==6.1.0
